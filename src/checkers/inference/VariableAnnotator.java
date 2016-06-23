@@ -18,6 +18,7 @@ import org.checkerframework.javacutil.ElementUtils;
 import org.checkerframework.javacutil.ErrorReporter;
 import org.checkerframework.javacutil.Pair;
 import org.checkerframework.javacutil.TreeUtils;
+import org.checkerframework.javacutil.TypesUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +44,7 @@ import com.sun.source.tree.BinaryTree;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.IdentifierTree;
 import com.sun.source.tree.IntersectionTypeTree;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.MethodTree;
@@ -611,7 +613,7 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
      * @return null
      */
     @Override
-    public Void visitDeclared(final AnnotatedDeclaredType adt, final Tree tree) {
+    public Void visitDeclared(AnnotatedDeclaredType adt, final Tree tree) {
 
         if (tree instanceof BinaryTree) {
             // Since there are so many kinds of binary trees
@@ -691,6 +693,18 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
 
             if (!handleWasRawDeclaredTypes(adt)
                     && !parameterizedTypeTree.getTypeArguments().isEmpty()) {
+
+                if (TypesUtils.isAnonymous(adt.getUnderlyingType())
+                        && parameterizedTypeTree.getType() instanceof IdentifierTree) {
+                    for (AnnotatedDeclaredType adtSuper : adt.directSuperTypes()) {
+                        if (((IdentifierTree) parameterizedTypeTree.getType()).getName().toString()
+                                .equals(adtSuper.getUnderlyingType().asElement().toString())) {
+                            adt = adtSuper;
+                         }
+                    }
+
+                }
+
                 final List<? extends Tree> treeArgs = parameterizedTypeTree.getTypeArguments();
                 final List<AnnotatedTypeMirror> typeArgs = adt.getTypeArguments();
 
