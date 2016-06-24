@@ -697,12 +697,11 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
                 if (TypesUtils.isAnonymous(adt.getUnderlyingType())
                         && parameterizedTypeTree.getType() instanceof IdentifierTree) {
                     for (AnnotatedDeclaredType adtSuper : adt.directSuperTypes()) {
-                        if (((IdentifierTree) parameterizedTypeTree.getType()).getName().toString()
+                        if (TreeUtils.elementFromUse((IdentifierTree) parameterizedTypeTree.getType()).toString()
                                 .equals(adtSuper.getUnderlyingType().asElement().toString())) {
                             adt = adtSuper;
                          }
                     }
-
                 }
 
                 final List<? extends Tree> treeArgs = parameterizedTypeTree.getTypeArguments();
