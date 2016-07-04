@@ -443,7 +443,7 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
 
             potentialVariable = createVariable(typeTree);
             final Pair<VariableSlot, Set<? extends AnnotationMirror>> varATMPair = Pair.of(
-                    potentialVariable, AnnotationUtils.createAnnotationSet());
+                    potentialVariable, typeVar.getAnnotations());
             treeToVarAnnoPair.put(typeTree, varATMPair);
 
             // TODO: explicitPrimary is null at this point! Someone needs to set it.

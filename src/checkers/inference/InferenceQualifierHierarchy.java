@@ -282,10 +282,11 @@ public class InferenceQualifierHierarchy extends MultiGraphQualifierHierarchy {
         final Slot slot2 = slotMgr.getSlot(a2);
         if (slot1 != slot2) {
             final CombVariableSlot combVariableSlot = new CombVariableSlot(null, slotMgr.nextId(), slot1, slot2);
-            System.out.println("combVariableSlot created: " + combVariableSlot);
             slotMgr.addVariable(combVariableSlot);
+
             constraintMgr.add(new SubtypeConstraint(slot1, combVariableSlot));
             constraintMgr.add(new SubtypeConstraint(slot2, combVariableSlot));
+
             return slotMgr.getAnnotation(combVariableSlot);
         } else {
             return slotMgr.getAnnotation(slot1);
