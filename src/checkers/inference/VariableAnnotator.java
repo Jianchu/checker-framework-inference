@@ -17,10 +17,8 @@ import org.checkerframework.framework.util.AnnotationBuilder;
 import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.ElementUtils;
 import org.checkerframework.javacutil.ErrorReporter;
-import org.checkerframework.javacutil.InternalUtils;
 import org.checkerframework.javacutil.Pair;
 import org.checkerframework.javacutil.TreeUtils;
-import org.checkerframework.javacutil.TypesUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,29 +38,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.TypeKind;
 
-import com.sun.source.tree.AnnotatedTypeTree;
-import com.sun.source.tree.ArrayTypeTree;
-import com.sun.source.tree.BinaryTree;
-import com.sun.source.tree.ClassTree;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.IdentifierTree;
-import com.sun.source.tree.IntersectionTypeTree;
-import com.sun.source.tree.MemberSelectTree;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.NewArrayTree;
-import com.sun.source.tree.ParameterizedTypeTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.tree.Tree.Kind;
-import com.sun.source.tree.TypeParameterTree;
-import com.sun.source.tree.UnionTypeTree;
-import com.sun.source.tree.VariableTree;
-import com.sun.source.tree.WildcardTree;
-import com.sun.source.util.TreePath;
-import com.sun.tools.javac.code.Symbol.ClassSymbol;
-import com.sun.tools.javac.code.Symbol.MethodSymbol;
-import com.sun.tools.javac.tree.JCTree;
-
 import annotations.io.ASTIndex;
 import annotations.io.ASTPath;
 import annotations.io.ASTRecord;
@@ -80,6 +55,28 @@ import checkers.inference.util.ASTPathUtil;
 import checkers.inference.util.ConstantToVariableAnnotator;
 import checkers.inference.util.CopyUtil;
 import checkers.inference.util.InferenceUtil;
+
+import com.sun.source.tree.AnnotatedTypeTree;
+import com.sun.source.tree.ArrayTypeTree;
+import com.sun.source.tree.BinaryTree;
+import com.sun.source.tree.ClassTree;
+import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.IntersectionTypeTree;
+import com.sun.source.tree.MemberSelectTree;
+import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.NewArrayTree;
+import com.sun.source.tree.ParameterizedTypeTree;
+import com.sun.source.tree.Tree;
+import com.sun.source.tree.Tree.Kind;
+import com.sun.source.tree.TypeParameterTree;
+import com.sun.source.tree.UnionTypeTree;
+import com.sun.source.tree.VariableTree;
+import com.sun.source.tree.WildcardTree;
+import com.sun.source.util.TreePath;
+import com.sun.tools.javac.code.Symbol.ClassSymbol;
+import com.sun.tools.javac.code.Symbol.MethodSymbol;
+import com.sun.tools.javac.tree.JCTree;
 
 
 /**
@@ -622,7 +619,7 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
      * @return null
      */
     @Override
-    public Void visitDeclared(AnnotatedDeclaredType adt, final Tree tree) {
+    public Void visitDeclared(final AnnotatedDeclaredType adt, final Tree tree) {
 
         if (tree instanceof BinaryTree) {
             // Since there are so many kinds of binary trees
@@ -702,16 +699,6 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
 
             if (!handleWasRawDeclaredTypes(adt)
                     && !parameterizedTypeTree.getTypeArguments().isEmpty()) {
-
-                if (TypesUtils.isAnonymous(adt.getUnderlyingType())
-                        && parameterizedTypeTree.getType() instanceof IdentifierTree) {
-                    for (AnnotatedDeclaredType adtSuper : adt.directSuperTypes()) {
-                        if (InternalUtils.typeOf(parameterizedTypeTree.getType()).toString()
-                                .equals(adtSuper.getUnderlyingType().asElement().toString())) {
-                            adt = adtSuper;
-                         }
-                    }
-                }
 
                 final List<? extends Tree> treeArgs = parameterizedTypeTree.getTypeArguments();
                 final List<AnnotatedTypeMirror> typeArgs = adt.getTypeArguments();
