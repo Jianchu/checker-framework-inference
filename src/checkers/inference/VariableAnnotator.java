@@ -699,7 +699,6 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
 
             if (!handleWasRawDeclaredTypes(adt)
                     && !parameterizedTypeTree.getTypeArguments().isEmpty()) {
-
                 final List<? extends Tree> treeArgs = parameterizedTypeTree.getTypeArguments();
                 final List<AnnotatedTypeMirror> typeArgs = adt.getTypeArguments();
 
