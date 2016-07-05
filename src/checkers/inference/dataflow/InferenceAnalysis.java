@@ -1,12 +1,5 @@
 package checkers.inference.dataflow;
 
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeKind;
-
 import org.checkerframework.dataflow.cfg.node.Node;
 import org.checkerframework.framework.flow.CFAbstractAnalysis;
 import org.checkerframework.framework.flow.CFAnalysis;
@@ -17,6 +10,13 @@ import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.GenericAnnotatedTypeFactory;
 import org.checkerframework.javacutil.ErrorReporter;
 import org.checkerframework.javacutil.Pair;
+
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeKind;
 
 import checkers.inference.ConstraintManager;
 import checkers.inference.InferenceChecker;
@@ -72,18 +72,15 @@ public class InferenceAnalysis extends CFAnalysis {
     @Override
     public CFValue defaultCreateAbstractValue(CFAbstractAnalysis<CFValue, ?, ?> analysis, AnnotatedTypeMirror aType) {
 
-        if (aType.getAnnotations().size() == 0 && aType.getKind() != TypeKind.TYPEVAR) {
-            // This happens for currently for class declarations.
-            logger.fine("Found aType with no inferenceAnnotations. Returning null. Type found: " +aType.toString());
-            return null;
-        } else if (aType.getAnnotations().size() > 2) {
+        if ((aType.getAnnotations().size() == 2)
+                || (aType.getAnnotations().size() == 1 && aType.getKind() == TypeKind.TYPEVAR)) {
+            return new InferenceValue((InferenceAnalysis) analysis, aType);
+        } else {
             // Canary for bugs with VarAnnots
             //Note: You can have 1 annotation if a primary annotation in the real type system is
             //present for a type variable use or wildcard
-            ErrorReporter.errorAbort("Found type in inference with the wrong number of annotations. Should always have 0, 1, or 2: " + aType);
+            ErrorReporter.errorAbort("Found type in inference with the wrong number of annotations. Should always have 1 or 2: " + aType);
             return null; // dead
-        } else {
-            return new InferenceValue((InferenceAnalysis) analysis, aType);
         }
     }
 
