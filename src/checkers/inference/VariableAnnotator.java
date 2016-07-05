@@ -512,8 +512,8 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
 
         atm.replaceAnnotation(slotManager.getAnnotation(variable));
 
-        if (atm.getEffectiveAnnotationInHierarchy(unqualified) == null) {
-            atm.addAnnotation(unqualified);
+        if (atm.getEffectiveAnnotationInHierarchy(realTop) == null) {
+            atm.addAnnotation(realTop);
         }
 
 
@@ -537,7 +537,7 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
         atm.addAnnotation(slotManager.getAnnotation(variable));
         slotManager.addVariable(variable);
 
-        AnnotationMirror realAnno = atm.getAnnotationInHierarchy(unqualified);
+        AnnotationMirror realAnno = atm.getAnnotationInHierarchy(realTop);
         if (realAnno != null && !InferenceQualifierHierarchy.isUnqualified(realAnno)) {
             constraintManager.add(new EqualityConstraint(slotManager.getSlot(realAnno), variable));
         }
@@ -560,7 +560,7 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
         // Create constraints for pre-annotated code and constant slots when the variable slot is created.
         AnnotationMirror existinVar = atm.getAnnotationInHierarchy(varAnnot);
         if (!atm.getAnnotations().isEmpty()) {
-            realQualifier = atm.getAnnotationInHierarchy(unqualified);
+            realQualifier = atm.getAnnotationInHierarchy(realTop);
 
             if (!InferenceQualifierHierarchy.isUnqualified(realQualifier) &&
                     !InferenceQualifierHierarchy.isPolymorphic(realQualifier)) {
@@ -766,7 +766,7 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
             }
             List<AnnotatedDeclaredType> superTypes = classType.directSuperTypes();
             superTypes.get(0).replaceAnnotation(slotManager.getAnnotation(extendsSlot));
-            addUnqualifiedIfMissing(superTypes.get(0));
+            addRealTopIfMissing(superTypes.get(0));
 
         } else {
             final AnnotatedTypeMirror extendsType = inferenceTypeFactory.getAnnotatedTypeFromTypeTree(extendsTree);
@@ -793,8 +793,8 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
         VariableSlot varSlot = getOrCreateDeclBound(classType);
         classType.addAnnotation(slotManager.getAnnotation(varSlot));
 
-        if (classType.getAnnotationInHierarchy(unqualified) == null) {
-            classType.addAnnotation(unqualified);
+        if (classType.getAnnotationInHierarchy(realTop) == null) {
+            classType.addAnnotation(realTop);
         }
 
         //before we were relying on trees but the ClassTree has it's type args erased
@@ -1070,7 +1070,7 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
 
             ASTRecord astRec = astRecord.newArrayLevel(level);
             createEquivalentSlotConstraints(loopType, tree, new AstPathLocation(astRec));
-            addUnqualifiedIfMissing(loopType);
+            addRealTopIfMissing(loopType);
         }
     }
 
@@ -1111,7 +1111,7 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
             final TreePath pathToTree = inferenceTypeFactory.getPath(topLevelTree);
             ASTRecord astRec = ASTPathUtil.getASTRecordForPath(inferenceTypeFactory, pathToTree).newArrayLevel(level);
             createEquivalentSlotConstraints(type, tree, new AstPathLocation(astRec));
-            addUnqualifiedIfMissing(type);
+            addRealTopIfMissing(type);
 
         } else if (!(tree.getKind() == Tree.Kind.NEW_ARRAY
                      || tree.getKind() == Tree.Kind.ARRAY_TYPE)) {
@@ -1154,7 +1154,7 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
             TreePath pathToTopLevelTree = inferenceTypeFactory.getPath(topLevelTree);
             ASTRecord astRecord = ASTPathUtil.getASTRecordForPath(inferenceTypeFactory, pathToTopLevelTree).newArrayLevel(level);
             createEquivalentSlotConstraints(type, tree, new AstPathLocation(astRecord));
-            addUnqualifiedIfMissing(type);
+            addRealTopIfMissing(type);
         }
     }
 
@@ -1220,7 +1220,7 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
 
                 final AnnotatedTypeMirror upperBound = typeVar.getUpperBound();
                 upperBound.addAnnotation(slotManager.getAnnotation(extendsSlot));
-                addUnqualifiedIfMissing(upperBound);
+                addRealTopIfMissing(upperBound);
             }
 
         } else  {
@@ -1414,7 +1414,7 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
                     addImpliedPrimaryVariable(type, new AstPathLocation(path));
                 }
 
-                addUnqualifiedIfMissing(receiverType);
+                addRealTopIfMissing(receiverType);
                 receiverMissingTrees.put(methodElem, receiverType.deepCopy());
                 logger.fine("Created variable for implicit receiver on method:\n" + methodElem + "=>" + receiverType);
 
@@ -1560,9 +1560,9 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
         }
     }
 
-    private void addUnqualifiedIfMissing(final AnnotatedTypeMirror type) {
-        if (type.getAnnotationInHierarchy(unqualified) == null) {
-            type.addAnnotation(unqualified);
+    private void addRealTopIfMissing(final AnnotatedTypeMirror type) {
+        if (type.getAnnotationInHierarchy(realTop) == null) {
+            type.addAnnotation(realTop);
         }
     }
 
