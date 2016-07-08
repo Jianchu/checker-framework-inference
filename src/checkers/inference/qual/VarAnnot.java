@@ -1,5 +1,6 @@
 package checkers.inference.qual;
 
+import org.checkerframework.framework.qual.DefaultQualifierInHierarchy;
 import org.checkerframework.framework.qual.SubtypeOf;
 
 import java.lang.annotation.ElementType;
@@ -23,6 +24,7 @@ import java.lang.annotation.Target;
  * was generated for.  If the VarAnnot was generated for an implicit location then source code should be generated to
  * construct the appropriate location.
  */
+@DefaultQualifierInHierarchy
 @Retention(RetentionPolicy.RUNTIME)
 @SubtypeOf({})
 @Target({ElementType.TYPE_USE, ElementType.TYPE_PARAMETER})

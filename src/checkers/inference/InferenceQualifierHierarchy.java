@@ -3,7 +3,7 @@ package checkers.inference;
 import org.checkerframework.framework.qual.PolymorphicQualifier;
 import org.checkerframework.framework.qual.Unqualified;
 import org.checkerframework.framework.type.QualifierHierarchy;
-import org.checkerframework.framework.util.MultiGraphQualifierHierarchy;
+import org.checkerframework.framework.util.GraphQualifierHierarchy;
 import org.checkerframework.framework.util.PluginUtil;
 import org.checkerframework.javacutil.AnnotationUtils;
 import org.checkerframework.javacutil.ErrorReporter;
@@ -29,44 +29,27 @@ import checkers.inference.util.InferenceUtil;
  * generates subtype and equality constraints between the input types based on the expected subtype
  * relationship (as described by the method signature).
  */
-public class InferenceQualifierHierarchy extends MultiGraphQualifierHierarchy {
+public class InferenceQualifierHierarchy extends GraphQualifierHierarchy {
     private final InferenceMain inferenceMain = InferenceMain.getInstance();
-    private final AnnotationMirror unqualified;
     private final AnnotationMirror varAnnot;
 
     private final SlotManager slotMgr;
     private final ConstraintManager constraintMgr;
 
-    public InferenceQualifierHierarchy(final MultiGraphFactory multiGraphFactory) {
-        super(multiGraphFactory);
+    public InferenceQualifierHierarchy(final MultiGraphFactory multiGraphFactory, final AnnotationMirror varAnnot) {
+        super(multiGraphFactory, varAnnot);
+        this.varAnnot = varAnnot;
         final Set<? extends AnnotationMirror> tops = this.getTopAnnotations();
-
-        AnnotationMirror localUnqualified = null;
-        AnnotationMirror localVarAnnot = null;
-        for (AnnotationMirror top : tops) {
-            if (isVarAnnot(top)) {
-                localVarAnnot = top;
-            } else {
-                localUnqualified = top;
-            }
-        }
-        unqualified = localUnqualified;
-        varAnnot = localVarAnnot;
-
-        if (unqualified == null) {
-            ErrorReporter.errorAbort(
-                    "Unqualified not found in the list of top annotations: tops=" + PluginUtil.join(", ", tops));
-        }
 
         if (varAnnot == null) {
             ErrorReporter.errorAbort(
                     "VarAnnot not found in the list of top annotations: tops=" + PluginUtil.join(", ", tops));
         }
 
-        if (tops.size() != 2) {
+        if (tops.size() != 1) {
             ErrorReporter.errorAbort(
-                    "There should be only 2 top qualifiers "
-                 + "( org.checkerframework.framework.qual.Unqualified, checkers.inference.qual.VarAnnot ).\n"
+                    "There should be only 1 top qualifiers "
+                    + "( checkers.inference.qual.VarAnnot ).\n"
                  + "Tops found ( " + InferenceUtil.join(tops) + " )"
             );
         }
@@ -300,11 +283,7 @@ public class InferenceQualifierHierarchy extends MultiGraphQualifierHierarchy {
 
     @Override
     public AnnotationMirror getTopAnnotation(final AnnotationMirror am) {
-        if (isVarAnnot(am)) {
-            return varAnnot;
-        } //else
-
-        return unqualified;
+        return varAnnot;
     }
 
     @Override

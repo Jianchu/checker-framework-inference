@@ -39,6 +39,24 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.TypeKind;
 
+import annotations.io.ASTIndex;
+import annotations.io.ASTPath;
+import annotations.io.ASTRecord;
+import checkers.inference.model.AnnotationLocation;
+import checkers.inference.model.AnnotationLocation.AstPathLocation;
+import checkers.inference.model.AnnotationLocation.ClassDeclLocation;
+import checkers.inference.model.ConstantSlot;
+import checkers.inference.model.EqualityConstraint;
+import checkers.inference.model.ExistentialVariableSlot;
+import checkers.inference.model.Slot;
+import checkers.inference.model.SubtypeConstraint;
+import checkers.inference.model.VariableSlot;
+import checkers.inference.qual.VarAnnot;
+import checkers.inference.util.ASTPathUtil;
+import checkers.inference.util.ConstantToVariableAnnotator;
+import checkers.inference.util.CopyUtil;
+import checkers.inference.util.InferenceUtil;
+
 import com.sun.source.tree.AnnotatedTypeTree;
 import com.sun.source.tree.ArrayTypeTree;
 import com.sun.source.tree.BinaryTree;
@@ -60,24 +78,6 @@ import com.sun.source.util.TreePath;
 import com.sun.tools.javac.code.Symbol.ClassSymbol;
 import com.sun.tools.javac.code.Symbol.MethodSymbol;
 import com.sun.tools.javac.tree.JCTree;
-
-import annotations.io.ASTIndex;
-import annotations.io.ASTPath;
-import annotations.io.ASTRecord;
-import checkers.inference.model.AnnotationLocation;
-import checkers.inference.model.AnnotationLocation.AstPathLocation;
-import checkers.inference.model.AnnotationLocation.ClassDeclLocation;
-import checkers.inference.model.ConstantSlot;
-import checkers.inference.model.EqualityConstraint;
-import checkers.inference.model.ExistentialVariableSlot;
-import checkers.inference.model.Slot;
-import checkers.inference.model.SubtypeConstraint;
-import checkers.inference.model.VariableSlot;
-import checkers.inference.qual.VarAnnot;
-import checkers.inference.util.ASTPathUtil;
-import checkers.inference.util.ConstantToVariableAnnotator;
-import checkers.inference.util.CopyUtil;
-import checkers.inference.util.InferenceUtil;
 
 
 /**
@@ -165,8 +165,8 @@ public class VariableAnnotator extends AnnotatedTypeScanner<Void,Tree> {
         this.unqualified = new AnnotationBuilder(typeFactory.getProcessingEnv(), Unqualified.class).build();
         this.varAnnot = new AnnotationBuilder(typeFactory.getProcessingEnv(), VarAnnot.class).build();
 
-        this.existentialInserter = new ExistentialVariableInserter(slotManager, constraintManager, this.unqualified,
-                                                                   varAnnot, this);
+        this.existentialInserter = new ExistentialVariableInserter(slotManager, constraintManager,
+                varAnnot, this);
 
         this.impliedTypeAnnotator = new ImpliedTypeAnnotator(inferenceTypeFactory, slotManager, existentialInserter);
         this.constantToVariableAnnotator = new ConstantToVariableAnnotator(unqualified, varAnnot, this,

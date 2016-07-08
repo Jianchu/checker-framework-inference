@@ -76,16 +76,14 @@ public class ExistentialVariableInserter {
     private final SlotManager slotManager;
     private final VariableAnnotator varAnnotator;
     private final ConstraintManager constraintMangaer;
-    private final AnnotationMirror unqualified;
     private final AnnotationMirror varAnnot;
 
-    public ExistentialVariableInserter(final SlotManager slotManager, final ConstraintManager constraintManager,
-                                       final AnnotationMirror unqualified, final AnnotationMirror varAnnot,
-                                       final VariableAnnotator varAnnotator) {
+    public ExistentialVariableInserter(final SlotManager slotManager,
+            final ConstraintManager constraintManager, final AnnotationMirror varAnnot,
+            final VariableAnnotator varAnnotator) {
         //bottom is used to force an annotation to exist in a non-defaultable location if it was written explicitly
         this.slotManager = slotManager;
         this.constraintMangaer = constraintManager;
-        this.unqualified = unqualified;
         this.varAnnot = varAnnot;
         this.varAnnotator = varAnnotator;
     }
@@ -133,10 +131,6 @@ public class ExistentialVariableInserter {
         public void matchAndReplacePrimary(final AnnotatedTypeMirror typeUse, final AnnotatedTypeMirror declaration) {
             if (InferenceMain.isHackMode(slotManager.getVariableSlot(typeUse) == null)) {
                 return;
-            }
-
-            if (typeUse.getAnnotationInHierarchy(unqualified) == null)  {
-                typeUse.addAnnotation(unqualified);
             }
 
             if (slotManager.getVariableSlot(typeUse).equals(potentialVariable)) {

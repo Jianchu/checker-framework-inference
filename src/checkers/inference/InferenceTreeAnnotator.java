@@ -18,6 +18,9 @@ import java.util.List;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeKind;
 
+import checkers.inference.util.ConstantToVariableAnnotator;
+import checkers.inference.util.InferenceUtil;
+
 import com.sun.source.tree.AnnotatedTypeTree;
 import com.sun.source.tree.AssignmentTree;
 import com.sun.source.tree.BinaryTree;
@@ -39,9 +42,6 @@ import com.sun.source.tree.TypeParameterTree;
 import com.sun.source.tree.UnaryTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.TreePath;
-
-import checkers.inference.util.ConstantToVariableAnnotator;
-import checkers.inference.util.InferenceUtil;
 
 /**
  * InferenceTreeAnnotator (a non-traversing visitor) determines which trees need to be annotated and then passes them
@@ -353,8 +353,7 @@ public class InferenceTreeAnnotator extends TreeAnnotator {
         //the instanceof will have annotations in both hierarchies.  Adding top means that when the
         //resultant dataflow most-specific happens the annotation will not actually contribute
         //any meaningful constraints (because everything is more specific than top).
-        if (testedType.getAnnotationInHierarchy(infTypeFactory.getVarAnnot())     == null
-         && testedType.getAnnotationInHierarchy(infTypeFactory.getUnqualified())  == null) {
+        if (testedType.getAnnotationInHierarchy(infTypeFactory.getVarAnnot()) == null) {
             testedType.addAnnotations(realTypeFactory.getQualifierHierarchy().getTopAnnotations());
         }
         constantToVarAnnotator.visit(testedType);

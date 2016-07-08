@@ -1,9 +1,5 @@
 package checkers.inference.util;
 
-import checkers.inference.SlotManager;
-import checkers.inference.VariableAnnotator;
-import checkers.inference.model.AnnotationLocation;
-import checkers.inference.model.ConstantSlot;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedExecutableType;
 import org.checkerframework.framework.type.visitor.AnnotatedTypeScanner;
@@ -11,6 +7,10 @@ import org.checkerframework.javacutil.ErrorReporter;
 
 import javax.lang.model.element.AnnotationMirror;
 
+import checkers.inference.SlotManager;
+import checkers.inference.VariableAnnotator;
+import checkers.inference.model.AnnotationLocation;
+import checkers.inference.model.ConstantSlot;
 import static checkers.inference.InferenceQualifierHierarchy.isUnqualified;
 
 /**

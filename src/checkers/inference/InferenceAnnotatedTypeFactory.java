@@ -147,8 +147,8 @@ public class InferenceAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
         unqualified = new AnnotationBuilder(processingEnv, Unqualified.class).build();
         varAnnot = new AnnotationBuilder(processingEnv, VarAnnot.class).build();
-        existentialInserter = new ExistentialVariableInserter(slotManager, constraintManager,
-                                                              unqualified, varAnnot, variableAnnotator);
+        existentialInserter = new ExistentialVariableInserter(slotManager, constraintManager, varAnnot,
+                variableAnnotator);
 
         inferencePoly = new InferenceQualifierPolymorphism(slotManager, variableAnnotator, varAnnot);
         postInit();
@@ -168,10 +168,6 @@ public class InferenceAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
     public TreeAnnotator createTreeAnnotator() {
         return new ListTreeAnnotator(new ImplicitsTreeAnnotator(this), new InferenceTreeAnnotator(this,
                 realChecker, realTypeFactory, variableAnnotator, slotManager));
-    }
-
-    public AnnotationMirror getUnqualified() {
-        return unqualified;
     }
 
     public AnnotationMirror getVarAnnot() {
@@ -194,18 +190,15 @@ public class InferenceAnnotatedTypeFactory extends BaseAnnotatedTypeFactory {
 
     @Override
     public QualifierHierarchy createQualifierHierarchy( MultiGraphQualifierHierarchy.MultiGraphFactory factory ) {
-        return new InferenceQualifierHierarchy(factory);
+        return new InferenceQualifierHierarchy(factory, varAnnot);
     }
 
     @Override
-    @SuppressWarnings( "deprecation" ) //for getRealTypeFactory
     protected Set<Class<? extends Annotation>> createSupportedTypeQualifiers() {
         final Set<Class<? extends Annotation>> typeQualifiers = new HashSet<>();
 
-        typeQualifiers.add(Unqualified.class);
         typeQualifiers.add(VarAnnot.class);
 
-        typeQualifiers.addAll(InferenceMain.getInstance().getRealTypeFactory().getSupportedTypeQualifiers());
         return Collections.unmodifiableSet(typeQualifiers);
     }
 
