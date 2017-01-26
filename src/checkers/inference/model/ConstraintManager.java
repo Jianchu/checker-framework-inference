@@ -14,6 +14,7 @@ import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 
 import checkers.inference.InferenceAnnotatedTypeFactory;
+import checkers.inference.InferenceMain;
 import checkers.inference.VariableAnnotator;
 
 /**
@@ -161,6 +162,9 @@ public class ConstraintManager {
     }
 
     public void addSubtypeConstraint(Slot subtype, Slot supertype) {
+        if (IsHackAndNull(subtype, supertype)) {
+            return;
+        }
         if ((subtype instanceof ConstantSlot)
                 && this.qualHierarchy.getTopAnnotations().contains(((ConstantSlot) subtype).getValue())) {
             this.addEqualityConstraint(supertype, (ConstantSlot) subtype);
@@ -174,7 +178,9 @@ public class ConstraintManager {
     }
 
     public void addEqualityConstraint(Slot first, Slot second) {
-        this.add(this.createEqualityConstraint(first, second));
+        if (!IsHackAndNull(first, second)) {
+            this.add(this.createEqualityConstraint(first, second));
+        }
     }
 
     public void addInequalityConstraint(Slot first, Slot second) {
@@ -200,5 +206,14 @@ public class ConstraintManager {
 
     private boolean areSameType(AnnotationMirror m1, AnnotationMirror m2) {
         return AnnotationUtils.areSameIgnoringValues(m1, m2);
+    }
+
+    private boolean IsHackAndNull(Slot first, Slot second) {
+        if (first == null || second == null) {
+            if (InferenceMain.isHackMode()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

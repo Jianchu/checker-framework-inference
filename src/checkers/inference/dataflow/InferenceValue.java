@@ -1,7 +1,5 @@
 package checkers.inference.dataflow;
 
-import checkers.inference.util.InferenceUtil;
-import javax.lang.model.type.TypeVariable;
 import org.checkerframework.framework.flow.CFValue;
 import org.checkerframework.framework.type.AnnotatedTypeMirror;
 import org.checkerframework.framework.type.AnnotatedTypeMirror.AnnotatedTypeVariable;
@@ -16,6 +14,7 @@ import java.util.Set;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Types;
 
 import checkers.inference.InferenceMain;
@@ -25,6 +24,7 @@ import checkers.inference.model.ConstantSlot;
 import checkers.inference.model.RefinementVariableSlot;
 import checkers.inference.model.Slot;
 import checkers.inference.model.VariableSlot;
+import checkers.inference.util.InferenceUtil;
 
 /**
  * InferenceValue extends CFValue for inference.
@@ -189,6 +189,11 @@ public class InferenceValue extends CFValue {
      *
      */
     public CFValue mostSpecificFromSlot(final Slot thisSlot, final Slot otherSlot, final CFValue other, final CFValue backup) {
+        if (thisSlot == null || otherSlot == null) {
+            if (InferenceMain.isHackMode()) {
+                return backup;
+            }
+        }
            if (thisSlot.isVariable() && otherSlot.isVariable()) {
                VariableSlot thisVarSlot = (VariableSlot) thisSlot;
                VariableSlot otherVarSlot = (VariableSlot) otherSlot;
